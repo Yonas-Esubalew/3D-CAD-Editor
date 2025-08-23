@@ -27,6 +27,15 @@ const SketchApp = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
+  // const canvasRef = useRef(null);
+  const threeRef = useRef(null);
+  // const [shapes, setShapes] = useState([]);
+  // const [currentShape, setCurrentShape] = useState(null);
+  // const [extrudeHeight, setExtrudeHeight] = useState(50);
+  const [scene, setScene] = useState(null);
+  const [renderer, setRenderer] = useState(null);
+  const [camera, setCamera] = useState(null);
+
   // State
   const [tool, setTool] = useState("pencil");
   const [color, setColor] = useState("#000000");
@@ -318,88 +327,83 @@ const SketchApp = () => {
   };
 
   const extrudeShape = () => {
+    if (!scene) return;
     if (!currentShape && shapes.length === 0) return;
 
     const shapeToExtrude = currentShape || shapes[shapes.length - 1];
+    let shape2D = null;
 
-    // Create a Three.js scene and extrude the shape
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    // Create shape geometry
-    let shapeGeometry;
-
+    // ✅ Rectangle → Extrude
     if (shapeToExtrude.type === "rectangle") {
       const width = Math.abs(shapeToExtrude.endX - shapeToExtrude.startX);
       const height = Math.abs(shapeToExtrude.endY - shapeToExtrude.startY);
 
-      const rectShape = new THREE.Shape();
-      rectShape.moveTo(0, 0);
-      rectShape.lineTo(width, 0);
-      rectShape.lineTo(width, height);
-      rectShape.lineTo(0, height);
-      rectShape.lineTo(0, 0);
+      shape2D = new THREE.Shape();
+      shape2D.moveTo(0, 0);
+      shape2D.lineTo(width, 0);
+      shape2D.lineTo(width, height);
+      shape2D.lineTo(0, height);
+      shape2D.lineTo(0, 0);
+    }
 
-      const extrudeSettings = {
-        depth: extrudeHeight,
-        bevelEnabled: true,
-        bevelThickness: 2,
-        bevelSize: 2,
-        bevelSegments: 3,
-      };
-
-      shapeGeometry = new THREE.ExtrudeGeometry(rectShape, extrudeSettings);
-    } else if (shapeToExtrude.type === "circle") {
+    // ✅ Circle → Extrude
+    else if (shapeToExtrude.type === "circle") {
       const radius = Math.sqrt(
         Math.pow(shapeToExtrude.endX - shapeToExtrude.startX, 2) +
           Math.pow(shapeToExtrude.endY - shapeToExtrude.startY, 2)
       );
+      shape2D = new THREE.Shape();
+      shape2D.absarc(0, 0, radius, 0, Math.PI * 2, false);
+    }
 
-      const circleShape = new THREE.Shape();
-      circleShape.absarc(0, 0, radius, 0, Math.PI * 2, false);
+    // ❌ Skip Pencil / Line / Eraser
+    else {
+      alert("Only Rectangle and Circle can be extruded into 3D!");
+      return;
+    }
 
+    // ✅ Build 3D mesh
+    if (shape2D) {
       const extrudeSettings = {
         depth: extrudeHeight,
-        bevelEnabled: true,
-        bevelThickness: 2,
-        bevelSize: 2,
-        bevelSegments: 16,
+        bevelEnabled: false,
       };
 
-      shapeGeometry = new THREE.ExtrudeGeometry(circleShape, extrudeSettings);
-    }
+      const geometry = new THREE.ExtrudeGeometry(shape2D, extrudeSettings);
+      const material = new THREE.MeshPhongMaterial({ color: 0x00ff88 });
+      const mesh = new THREE.Mesh(geometry, material);
 
-    if (shapeGeometry) {
-      const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-      const mesh = new THREE.Mesh(shapeGeometry, material);
+      mesh.position.set(0, 0, 0);
+
+      // Clear old meshes before adding new one
+      scene.children = scene.children.filter(
+        (obj) => !(obj instanceof THREE.Mesh)
+      );
       scene.add(mesh);
-
-      camera.position.z = 50;
-
-      // Add lights
-      const ambientLight = new THREE.AmbientLight(0x404040);
-      scene.add(ambientLight);
-
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-      directionalLight.position.set(1, 1, 1);
-      scene.add(directionalLight);
-
-      // Render the scene
-      renderer.render(scene, camera);
-
-      // Open extrusion in new window
-      const newWindow = window.open("", "_blank");
-      newWindow.document.body.appendChild(renderer.domElement);
-      newWindow.document.body.style.margin = "0";
-      newWindow.document.body.style.overflow = "hidden";
     }
+  };
+
+  // ✅ Save to localStorage (as image)
+  const saveScene = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dataURL = canvas.toDataURL("image/png");
+    localStorage.setItem("myCanvas", dataURL);
+    alert("✅ Canvas saved locally!");
+  };
+
+  // ✅ Export as file download (PNG)
+  const exportScene = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dataURL = canvas.toDataURL("image/png");
+
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = "drawing.png";
+    link.click();
   };
 
   return (
@@ -417,27 +421,20 @@ const SketchApp = () => {
           {/* Main Toolbar */}
           <div className="flex items-center space-x-3">
             {/* Save & Export */}
-            <button className="flex items-center space-x-1 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition shadow-lg">
+            <button
+              onClick={saveScene}
+              className="flex items-center space-x-1 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition shadow-lg"
+            >
               <Save size={18} />
               <span className="font-medium">Save</span>
             </button>
-            <button className="flex items-center space-x-1 bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg transition shadow-lg">
+
+            <button
+              onClick={exportScene}
+              className="flex items-center space-x-1 bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg transition shadow-lg"
+            >
               <Download size={18} />
               <span className="font-medium">Export</span>
-            </button>
-
-            {/* Undo / Redo */}
-            <button
-              className="flex items-center justify-center bg-green-800 hover:bg-green-700 p-2 rounded-lg transition shadow-md"
-              title="Undo"
-            >
-              <RotateCcw size={18} />
-            </button>
-            <button
-              className="flex items-center justify-center bg-green-800 hover:bg-green-700 p-2 rounded-lg transition shadow-md"
-              title="Redo"
-            >
-              <RotateCw size={18} />
             </button>
 
             {/* Additional Tools */}
@@ -727,6 +724,25 @@ const SketchApp = () => {
               <p className="text-gray-400 text-center px-2">
                 3D preview will appear here after extrusion
               </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <label className="font-semibold">
+                Extrude Height: {extrudeHeight}
+              </label>
+              <input
+                type="range"
+                min="10"
+                max="200"
+                value={extrudeHeight}
+                onChange={(e) => setExtrudeHeight(Number(e.target.value))}
+              />
+              <button
+                onClick={extrudeShape}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg shadow"
+              >
+                Extrude Shape
+              </button>
             </div>
 
             {/* Dimensions */}
