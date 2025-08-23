@@ -458,7 +458,7 @@ const SketchApp = () => {
             <Link
               className="flex items-center space-x-1 bg-green-400 hover:bg-green-500 px-3 py-2 rounded-lg transition shadow-lg"
               title="Switch to 3D Editor"
-              to="/3d-editor"
+              to="/"
             >
               <Box size={18} />
               <span className="font-medium text-white">3D Mode</span>

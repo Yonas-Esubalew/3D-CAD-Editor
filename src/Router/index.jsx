@@ -14,7 +14,7 @@ const router = createBrowserRouter([
         element: <SketchApp />,
       },
       {
-        path: "3d-editor",
+        path: "/",
         element: <ThreeDEditor/>
       }
     ],
