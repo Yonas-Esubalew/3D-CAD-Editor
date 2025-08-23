@@ -664,21 +664,40 @@ export default function ThreeDEditor() {
       {/* Canvas + Sidebar */}
       <div className="relative flex-1 bg-slate-950" ref={mountRef}>
         {/* Toggle Sidebar */}
-        <button
+        {/* <button
           onClick={() => setUi((s) => ({ ...s, sidebar: !s.sidebar }))}
           className="absolute top-4 right-4 z-20 flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-medium shadow-lg hover:from-sky-500 hover:to-indigo-500 transition"
         >
           ⚙️ Properties
-        </button>
+        </button> */}
 
         {/* Sidebar */}
         <div
-          className={`fixed top-24 right-0 h-[calc(100vh-6rem)] w-80 max-w-[90vw] bg-gradient-to-br from-green-900 via-green-700 to-green-400 text-white p-6 shadow-2xl overflow-y-auto z-50 transform transition-transform duration-300 ease-in-out
+          className={`fixed top-16 right-0 h-[calc(100vh-6rem)] w-80 max-w-[90vw] bg-gradient-to-br from-green-900 via-green-700 to-green-400 text-white p-6 shadow-2xl overflow-y-auto z-50 transform transition-transform duration-300 ease-in-out
           ${ui.sidebar ? "translate-x-0" : "translate-x-full"}`}
         >
           <h2 className="text-2xl font-bold mb-6 tracking-wide border-b border-slate-700 pb-3">
             Object Properties
           </h2>
+
+          {/* Color Picker */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-2 text-pink-400">Color</h3>
+            <input
+              type="color"
+              value={
+                selectedRef.current
+                  ? `#${selectedRef.current.material.color.getHexString()}`
+                  : "#ffffff"
+              }
+              onChange={(e) => {
+                if (selectedRef.current) {
+                  selectedRef.current.material.color.set(e.target.value);
+                }
+              }}
+              className="w-full h-10 rounded cursor-pointer"
+            />
+          </div>
 
           {/* Position */}
           <div className="mb-8">
