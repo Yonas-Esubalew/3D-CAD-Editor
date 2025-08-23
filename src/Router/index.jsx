@@ -1,18 +1,20 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import ThreeJsCadEditor from "../pages/3DPage";
-import ThreeDEditor from "../pages/3dcode";
+import ThreeJsCadEditor from "../pages/2DEditor";
+import ThreeDEditor from "../pages/3DEditor";
+import CADEditor from "../pages/2DEditor";
+import SketchApp from "../pages/2DEditor";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
       {
-        path: "page",
-        element: <ThreeJsCadEditor />,
+        path: "2d-editor",
+        element: <SketchApp />,
       },
       {
-        path: "page1",
+        path: "3d-editor",
         element: <ThreeDEditor/>
       }
     ],
