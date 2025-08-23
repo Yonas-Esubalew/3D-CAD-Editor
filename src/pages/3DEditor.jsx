@@ -511,6 +511,22 @@ export default function ThreeDEditor() {
   };
   const handleSliderCommit = () => saveState();
 
+  // Change color of ALL meshes in the scene
+  const changeAllObjectsColor = (scene, newColor) => {
+    scene.traverse((child) => {
+      if (child.isMesh && child.material) {
+        // Clone material if shared
+        if (Array.isArray(child.material)) {
+          child.material.forEach((mat) => {
+            mat.color.set(newColor);
+          });
+        } else {
+          child.material.color.set(newColor);
+        }
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <motion.div
@@ -691,8 +707,17 @@ export default function ThreeDEditor() {
                   : "#ffffff"
               }
               onChange={(e) => {
+                const color = e.target.value;
                 if (selectedRef.current) {
-                  selectedRef.current.material.color.set(e.target.value);
+                  // Change only selected object
+                  selectedRef.current.material.color.set(color);
+                }
+                // 🔥 Change all 3D solids in the scene
+                if (mountRef.current) {
+                  changeAllObjectsColor(
+                    mountRef.current.__threeObj.scene,
+                    color
+                  );
                 }
               }}
               className="w-full h-10 rounded cursor-pointer"
