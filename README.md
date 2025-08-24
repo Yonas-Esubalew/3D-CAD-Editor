@@ -1,107 +1,165 @@
 🛠️ 3D CAD Editor
+A modern 2D → 3D CAD editor built with React, Three.js, and modern web technologies. Easily draw shapes, transform them in real-time, and extrude 2D sketches into 3D models — right in your browser.
 
-A modern 2D → 3D CAD editor built with React, Three.js, TailwindCSS, Framer Motion, and Lucide Icons.
-Easily draw shapes, transform them in real-time, and extrude 2D sketches into 3D models — right in your browser.
+https://img.shields.io/badge/3D-Editor-blue https://img.shields.io/badge/React-18.2.0-61dafb https://img.shields.io/badge/Three.js-r152-000000 https://img.shields.io/badge/License-MIT-green
 
-🌐 Live Demo → 3d-cad-editor.vercel.app
+https://raw.githubusercontent.com/yonas-esubalew/3d-cad-editor/main/public/demo-preview.gif
 
 ✨ Features
+🎨 2D Drawing Tools
+Shape Tools: Rectangle, Circle, Line, Pencil, Eraser
 
-✅ 2D Drawing Tools
+Customization: Adjustable brush size, color picker, snap-to-grid
 
-Rectangle, Circle, Line, Pencil, Eraser
+Precision: Real-time dimension display while drawing
 
-✅ 3D Editor
+🔧 3D Modeling
+Extrusion: Convert 2D shapes (Rectangle & Circle) into 3D models
 
-Extrude 2D shapes (Rectangle & Circle) into 3D
+Transformation: Interactive rotation and scaling with mouse controls
 
-Transform: Move, Rotate, Scale
+Visualization: Clean 3D preview with professional lighting
 
-Snap-to-grid option
+💾 Project Management
+Undo/Redo: Full history tracking for all operations
 
-Object properties (Position, Rotation, Scale, Dimensions)
+Export Options: Save as PNG or JSON
 
-✅ Customization
+Local Storage: Automatically save your work
 
-Live Color Picker for materials
+🎯 User Experience
+Responsive Design: Works on desktop and tablet devices
 
-Adjustable Extrude Height
+Intuitive UI: Clean interface with tooltips and visual feedback
 
-Sidebar property editor
+Real-time Preview: Instant 3D visualization of your designs
 
-✅ Scene Controls
+🚀 Quick Start
+Prerequisites
+Node.js (v14 or higher)
 
-Undo / Redo
+npm or yarn
 
-Import / Export as JSON
+Installation
+Clone the repository
 
-Save & Export models to local computer
-
-✅ UI/UX
-
-Fixed header with toolbar (Shapes, Transform, Scene)
-
-Animated transitions with Framer Motion
-
-Clean TailwindCSS + gradient design
-
-Lucide React icons
-
-🚀 Getting Started
-1️⃣ Clone the repo
-git clone https://github.com/yourusername/3d-cad-editor.git
+bash
+git clone https://github.com/yonas-esubalew/3d-cad-editor.git
 cd 3d-cad-editor
+Install dependencies
 
-2️⃣ Install dependencies
+bash
 npm install
+Start the development server
 
-3️⃣ Run locally
+bash
 npm run dev
+Open your browser
+Navigate to http://localhost:5173
 
+📖 How to Use
+Draw 2D Shapes: Select a drawing tool from the left sidebar and create shapes on the canvas
 
-Now open 👉 http://localhost:5173 in your browser.
+Adjust Properties: Modify brush size, colors, and grid settings as needed
 
-📸 Demo Preview
+Extrude to 3D: Select your shape and adjust the extrusion height, then click "Extrude to 3D"
 
-🔮 Future Improvements
+Interact with 3D Model: Use mouse drag to rotate and scroll wheel to scale your 3D model
 
-With more time, we could add:
-
-✏️ Freehand extrusion for Pencil / Line drawings
-
-🖼️ Import SVG → Convert to 3D
-
-📐 Measurement tools (ruler, guides)
-
-💾 Export to .obj, .stl for 3D printing
-
-🌍 Multi-object scenes with grouping
-
-🎨 Material & texture library
-
-🔑 User accounts + cloud save
+Export Your Work: Save your creation as an image or JSON file
 
 🛠️ Tech Stack
+Frontend Framework: React 18
 
-React
- – UI framework
+3D Graphics: Three.js
 
-Three.js
- – 3D engine
+Styling: TailwindCSS
 
-TailwindCSS
- – Styling
+Icons: Lucide React
 
-Framer Motion
- – Animations
+Build Tool: Vite
 
-Lucide React
- – Icons
+Deployment: Vercel
+
+🔮 Future Enhancements
+With more development time, we could implement:
+
+✨ Advanced Modeling
+Freehand extrusion for pencil and line drawings
+
+SVG import and conversion to 3D
+
+Multi-object scenes with grouping functionality
+
+Boolean operations (union, difference, intersection)
+
+📐 Precision Tools
+Measurement tools (ruler, guides, dimensions)
+
+Orthographic views (top, front, side)
+
+Advanced snapping options (vertex, edge, face)
+
+💾 Export & Integration
+Export to standard 3D formats (OBJ, STL, GLTF)
+
+3D printing preparation tools
+
+Integration with popular CAD services
+
+🌐 Collaboration
+User accounts with cloud storage
+
+Real-time collaboration features
+
+Project sharing and remixing
+
+🎨 Visual Enhancements
+Material and texture library
+
+Environment lighting presets
+
+Advanced rendering modes (wireframe, shaded)
+
+🐛 Known Issues
+Text tool is currently not implemented
+
+Complex shapes with holes are not supported
+
+Performance may decrease with very complex models
+
+🤝 Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+Fork the project
+
+Create your feature branch (git checkout -b feature/AmazingFeature)
+
+Commit your changes (git commit -m 'Add some AmazingFeature')
+
+Push to the branch (git push origin feature/AmazingFeature)
+
+Open a Pull Request
+
+📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 👨‍💻 Author
-  
-  Yonas Esubalew
+Yonas Esubalew
 
-👉 Try it live → 3d-cad-editor.vercel.app
+Website: yonas-esubalew.vercel.app
 
-✨ If you like this project, give it a ⭐ on GitHub!
+GitHub: @yonas-esubalew
+
+LinkedIn: Yonas Esubalew
+
+🙏 Acknowledgments
+Three.js community for excellent documentation and examples
+
+React team for the fantastic framework
+
+Vercel for seamless deployment
+
+📞 Support
+If you have any questions or need help, please open an issue on GitHub or contact me at yonas.esubalew@a2sv.org.
+
