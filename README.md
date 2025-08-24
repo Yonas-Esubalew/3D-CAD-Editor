@@ -1,9 +1,7 @@
 🛠️ 3D CAD Editor
 A modern 2D → 3D CAD editor built with React, Three.js, and modern web technologies. Easily draw shapes, transform them in real-time, and extrude 2D sketches into 3D models — right in your browser.
 
-https://img.shields.io/badge/3D-Editor-blue https://img.shields.io/badge/React-18.2.0-61dafb https://img.shields.io/badge/Three.js-r152-000000 https://img.shields.io/badge/License-MIT-green
-
-https://raw.githubusercontent.com/yonas-esubalew/3d-cad-editor/main/public/demo-preview.gif
+https://github.com/Yonas-Esubalew/3D-CAD-Editor/blob/main/Beige%2520New%2520Product%2520Mockup%2520Now%2520Available%2520Facebook%2520Post.png?raw=true
 
 ✨ Features
 🎨 2D Drawing Tools
@@ -44,8 +42,13 @@ Installation
 Clone the repository
 
 bash
-git clone https://github.com/yonas-esubalew/3d-cad-editor.git
-cd 3d-cad-editor
+git clone https://github.com/Yonas-Esubalew/3D-CAD-Editor.git
+cd 3D-CAD-Editor
+Navigate to the frontend directory
+
+bash
+cd frontend
+cd frontend
 Install dependencies
 
 bash
@@ -147,11 +150,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 👨‍💻 Author
 Yonas Esubalew
 
-Website: yonas-esubalew.vercel.app
+Website: https://yonas-esubalew.netlify.app
 
-GitHub: @yonas-esubalew
-
-LinkedIn: Yonas Esubalew
+Email: yonasatwork999@gmail.com
 
 🙏 Acknowledgments
 Three.js community for excellent documentation and examples
@@ -161,5 +162,4 @@ React team for the fantastic framework
 Vercel for seamless deployment
 
 📞 Support
-If you have any questions or need help, please open an issue on GitHub or contact me at yonas.esubalew@a2sv.org.
-
+If you have any questions or need help, please open an issue on GitHub or contact me at yonasatwork999@gmail.com.
