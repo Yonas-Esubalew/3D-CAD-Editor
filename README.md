@@ -1,6 +1,9 @@
 🛠️ 3D CAD Editor
 A modern 2D → 3D CAD editor built with React, Three.js, and modern web technologies. Easily draw shapes, transform them in real-time, and extrude 2D sketches into 3D models — right in your browser.
 
+## 🖥️ Live Demo
+Try the 3D CAD Editor right in your browser: [Live Demo](https://3d-cad-editor.vercel.app/)
+
 ![Demo](https://github.com/Yonas-Esubalew/3D-CAD-Editor/raw/main/Beige%20New%20Product%20Mockup%20Now%20Available%20Facebook%20Post.png)
 
 ✨ Features
