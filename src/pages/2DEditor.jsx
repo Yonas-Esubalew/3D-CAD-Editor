@@ -26,15 +26,7 @@ const SketchApp = () => {
   // Refs
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-
-  // const canvasRef = useRef(null);
-  const threeRef = useRef(null);
-  // const [shapes, setShapes] = useState([]);
-  // const [currentShape, setCurrentShape] = useState(null);
-  // const [extrudeHeight, setExtrudeHeight] = useState(50);
-  const [scene, setScene] = useState(null);
-  const [renderer, setRenderer] = useState(null);
-  const [camera, setCamera] = useState(null);
+  const threeCanvasRef = useRef(null);
 
   // State
   const [tool, setTool] = useState("pencil");
@@ -56,6 +48,13 @@ const SketchApp = () => {
     height: 0,
     radius: 0,
   });
+
+  // Three.js references
+  const sceneRef = useRef(null);
+  const rendererRef = useRef(null);
+  const cameraRef = useRef(null);
+  const meshRef = useRef(null);
+  const animationIdRef = useRef(null);
 
   // Initialize canvas context
   useEffect(() => {
@@ -81,6 +80,185 @@ const SketchApp = () => {
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+    };
+  }, []);
+
+  // Initialize Three.js scene
+  useEffect(() => {
+    if (!threeCanvasRef.current) return;
+
+    // Initialize scene with a more professional look
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a202c); // Darker background for better contrast
+    sceneRef.current = scene;
+
+    // Initialize camera with better positioning
+    const camera = new THREE.PerspectiveCamera(
+      60, // Wider field of view
+      threeCanvasRef.current.clientWidth / threeCanvasRef.current.clientHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(5, 5, 7);
+    camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
+
+    // Initialize renderer with higher quality settings
+    const renderer = new THREE.WebGLRenderer({
+      canvas: threeCanvasRef.current,
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(
+      threeCanvasRef.current.clientWidth,
+      threeCanvasRef.current.clientHeight
+    );
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    rendererRef.current = renderer;
+
+    // Enhanced lighting setup
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 15, 10);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 1024;
+    directionalLight.shadow.mapSize.height = 1024;
+    scene.add(directionalLight);
+
+    const fillLight = new THREE.DirectionalLight(0x7777ff, 0.3);
+    fillLight.position.set(-10, 5, -10);
+    scene.add(fillLight);
+
+    // Enhanced grid with multiple sizes and colors
+    const gridSize = 20;
+    const gridDivisions = 20;
+
+    // Major grid (darker)
+    const gridHelper = new THREE.GridHelper(
+      gridSize,
+      gridDivisions / 2,
+      0x444444,
+      0x444444
+    );
+    gridHelper.position.y = -0.01; // Slightly below other objects
+    scene.add(gridHelper);
+
+    // Minor grid (lighter)
+    const subGridHelper = new THREE.GridHelper(
+      gridSize,
+      gridDivisions,
+      0x222222,
+      0x222222
+    );
+    subGridHelper.position.y = -0.02;
+    scene.add(subGridHelper);
+
+    // Enhanced axes with arrows
+    const axesSize = 5;
+    const axesHelper = new THREE.AxesHelper(axesSize);
+    scene.add(axesHelper);
+
+    // Add coordinate indicators using simple geometries
+    const createAxisLabel = (text, position, color) => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      canvas.width = 64;
+      canvas.height = 64;
+
+      context.fillStyle = "rgba(0, 0, 0, 0)";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+
+      context.font = "48px Arial";
+      context.fillStyle = color;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(material);
+      sprite.position.copy(position);
+      sprite.scale.set(2, 2, 1);
+      scene.add(sprite);
+    };
+
+    createAxisLabel("X", new THREE.Vector3(axesSize + 1, 0, 0), "#ff0000");
+    createAxisLabel("Y", new THREE.Vector3(0, axesSize + 1, 0), "#00ff00");
+    createAxisLabel("Z", new THREE.Vector3(0, 0, axesSize + 1), "#0000ff");
+
+    // Add a subtle floor plane for better visualization
+    const planeGeometry = new THREE.PlaneGeometry(gridSize, gridSize);
+    const planeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x2d3748,
+      roughness: 0.8,
+      metalness: 0.2,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.5,
+    });
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.rotation.x = Math.PI / 2;
+    plane.position.y = -0.05;
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    // Add a bounding box to show the extent of the canvas
+    const boxGeometry = new THREE.BoxGeometry(gridSize, 6, gridSize);
+    const boxEdges = new THREE.EdgesGeometry(boxGeometry);
+    const boxLine = new THREE.LineSegments(
+      boxEdges,
+      new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.2,
+      })
+    );
+    boxLine.position.y = 2.5; // Center the box vertically
+    scene.add(boxLine);
+
+    // Animation loop with smoother rotation
+    const animate = () => {
+      animationIdRef.current = requestAnimationFrame(animate);
+
+      if (meshRef.current) {
+        meshRef.current.rotation.x += 0.005;
+        meshRef.current.rotation.y += 0.007;
+      }
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Handle resize with debounce for better performance
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (!threeCanvasRef.current) return;
+
+        camera.aspect =
+          threeCanvasRef.current.clientWidth /
+          threeCanvasRef.current.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(
+          threeCanvasRef.current.clientWidth,
+          threeCanvasRef.current.clientHeight
+        );
+      }, 250);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
+      }
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -327,7 +505,7 @@ const SketchApp = () => {
   };
 
   const extrudeShape = () => {
-    if (!scene) return;
+    if (!sceneRef.current) return;
     if (!currentShape && shapes.length === 0) return;
 
     const shapeToExtrude = currentShape || shapes[shapes.length - 1];
@@ -365,21 +543,36 @@ const SketchApp = () => {
     // ✅ Build 3D mesh
     if (shape2D) {
       const extrudeSettings = {
-        depth: extrudeHeight,
-        bevelEnabled: false,
+        depth: extrudeHeight / 10, // Scale down for better visualization
+        bevelEnabled: true,
+        bevelThickness: 2,
+        bevelSize: 2,
+        bevelSegments: 3,
       };
 
       const geometry = new THREE.ExtrudeGeometry(shape2D, extrudeSettings);
-      const material = new THREE.MeshPhongMaterial({ color: 0x00ff88 });
+      const material = new THREE.MeshPhongMaterial({
+        color: 0x00ff88,
+        specular: 0x111111,
+        shininess: 100,
+        side: THREE.DoubleSide,
+      });
+
+      // Remove previous mesh if exists
+      if (meshRef.current) {
+        sceneRef.current.remove(meshRef.current);
+      }
+
       const mesh = new THREE.Mesh(geometry, material);
+      meshRef.current = mesh;
 
-      mesh.position.set(0, 0, 0);
+      // Center the mesh
+      geometry.computeBoundingBox();
+      const center = new THREE.Vector3();
+      geometry.boundingBox.getCenter(center);
+      mesh.position.sub(center);
 
-      // Clear old meshes before adding new one
-      scene.children = scene.children.filter(
-        (obj) => !(obj instanceof THREE.Mesh)
-      );
-      scene.add(mesh);
+      sceneRef.current.add(mesh);
     }
   };
 
@@ -623,28 +816,6 @@ const SketchApp = () => {
                 </button>
               </div>
             </div>
-
-            <div className="mb-6">
-              <label className="block mb-2">
-                Extrusion Height: {extrudeHeight}px
-              </label>
-              <input
-                type="range"
-                min="10"
-                max="200"
-                value={extrudeHeight}
-                onChange={(e) => setExtrudeHeight(parseInt(e.target.value))}
-                className="w-full"
-              />
-            </div>
-
-            <button
-              className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg font-semibold transition flex items-center justify-center"
-              onClick={extrudeShape}
-            >
-              <Box className="mr-2" size={20} />
-              Extrude to 3D
-            </button>
           </div>
 
           {/* Main Canvas Area */}
@@ -720,15 +891,13 @@ const SketchApp = () => {
           <div className="lg:col-span-1 bg-black/30 rounded-xl p-4 h-[calc(100vh-6rem)] overflow-y-auto sticky top-24">
             {/* Extrusion Preview */}
             <h2 className="text-lg font-semibold mb-4">Extrusion Preview</h2>
-            <div className="bg-gray-800 rounded-lg h-48 mb-6 flex items-center justify-center">
-              <p className="text-gray-400 text-center px-2">
-                3D preview will appear here after extrusion
-              </p>
+            <div className="bg-gray-800 rounded-lg h-60 mb-6 flex items-center justify-center overflow-hidden">
+              <canvas ref={threeCanvasRef} className="w-full h-full" />
             </div>
 
             <div className="flex flex-col gap-3">
               <label className="font-semibold">
-                Extrude Height: {extrudeHeight}
+                Extrude Height: {extrudeHeight}px
               </label>
               <input
                 type="range"
@@ -738,10 +907,11 @@ const SketchApp = () => {
                 onChange={(e) => setExtrudeHeight(Number(e.target.value))}
               />
               <button
+                className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg font-semibold transition flex items-center justify-center"
                 onClick={extrudeShape}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg shadow"
               >
-                Extrude Shape
+                <Box className="mr-2" size={20} />
+                Extrude to 3D
               </button>
             </div>
 
@@ -771,17 +941,19 @@ const SketchApp = () => {
             {/* Export Options */}
             <h2 className="text-lg font-semibold mb-4">Export Options</h2>
             <div className="space-y-3">
-              <button className="w-full bg-gray-800 hover:bg-gray-700 py-2 rounded-lg transition flex items-center justify-center shadow-md">
+              <button
+                onClick={exportScene}
+                className="w-full bg-gray-800 hover:bg-gray-700 py-2 rounded-lg transition flex items-center justify-center shadow-md"
+              >
                 <Download className="mr-2" size={18} />
                 Export as PNG
               </button>
-              <button className="w-full bg-gray-800 hover:bg-gray-700 py-2 rounded-lg transition flex items-center justify-center shadow-md">
+              <button
+                onClick={saveScene}
+                className="w-full bg-gray-800 hover:bg-gray-700 py-2 rounded-lg transition flex items-center justify-center shadow-md"
+              >
                 <Upload className="mr-2" size={18} />
                 Export as JSON
-              </button>
-              <button className="w-full bg-gray-800 hover:bg-gray-700 py-2 rounded-lg transition flex items-center justify-center shadow-md">
-                <Box className="mr-2" size={18} />
-                Export as STL
               </button>
             </div>
           </div>
