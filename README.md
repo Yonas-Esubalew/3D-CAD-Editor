@@ -1,7 +1,7 @@
 🛠️ 3D CAD Editor
 A modern 2D → 3D CAD editor built with React, Three.js, and modern web technologies. Easily draw shapes, transform them in real-time, and extrude 2D sketches into 3D models — right in your browser.
 
-https://github.com/Yonas-Esubalew/3D-CAD-Editor/blob/main/Beige%2520New%2520Product%2520Mockup%2520Now%2520Available%2520Facebook%2520Post.png?raw=true
+![Demo](https://github.com/Yonas-Esubalew/3D-CAD-Editor/raw/main/Beige%20New%20Product%20Mockup%20Now%20Available%20Facebook%20Post.png)
 
 ✨ Features
 🎨 2D Drawing Tools
@@ -147,7 +147,7 @@ Open a Pull Request
 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-👨‍💻 Author
+👨‍💻 Author:
 Yonas Esubalew
 
 Website: https://yonas-esubalew.netlify.app
