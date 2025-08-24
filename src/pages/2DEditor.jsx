@@ -162,7 +162,6 @@ const SketchApp = () => {
     const axesHelper = new THREE.AxesHelper(axesSize);
     scene.add(axesHelper);
 
-    // Add coordinate indicators using simple geometries
     const createAxisLabel = (text, position, color) => {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
